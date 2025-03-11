@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"io"
 	"log"
 	"log/slog"
@@ -108,7 +109,7 @@ func main() {
 	})
 
 	// Inject middlewares
-	handler := mux // Start with mux as http.Handler
+	handler := http.Handler(mux) // Start with mux as http.Handler
 	handler = LoggingMiddleware(s)(handler)
 	handler = CORSMiddleware(handler)
 	handler = RecoveryMiddleware(s)(handler)
@@ -121,7 +122,8 @@ func main() {
 	}
 
 	go func() {
-		err := server.ListenAndServe()
+		fmt.Printf("Running server...")
+		err = server.ListenAndServe()
 		if err != nil && err != http.ErrServerClosed {
 			log.Fatalf("run server: %v", err)
 		}
